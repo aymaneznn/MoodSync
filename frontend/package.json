@@ -1,5 +1,5 @@
 {
-    "name": "sakai-vue",
+    "name": "mood-sync",
     "version": "4.2.0",
     "scripts": {
         "dev": "vite",

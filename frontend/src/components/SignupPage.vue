@@ -59,9 +59,17 @@ export default {
 
       try {
         const userData = {
-          username: form.value.username, // Use form.value instead of this.form
-          email: form.value.email,
-          password: form.value.password,
+          "email": form.value.email,
+          "passwordHash": form.value.password,
+          "name": form.value.username,
+          "role": "user",
+          "preferences": {
+            "theme": "dark",
+            "notifications": true
+          },
+          "profilePictureUrl": "https://example.com/profile/john_doe.png",
+          "connectionType": "independent",
+          "externalAccountId": null
         };
         const response = await signup(userData);
         console.log('Signup successful:', response);
@@ -69,7 +77,7 @@ export default {
         errorMessage.value = '';
         // Redirect to login or home page after a delay
         setTimeout(() => {
-          window.location.href = '/login'; // Replace with your desired redirect path
+          //window.location.href = '/login'; // Replace with your desired redirect path
         }, 2000);
       } catch (error) {
         console.error('Signup failed:', error);
@@ -107,65 +115,41 @@ export default {
       <form @submit.prevent="handleSubmit">
         <div class="mb-4">
           <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-          <InputText
-            id="username"
-            v-model="form.username"
-            class="w-full mt-1"
-            :class="{ 'p-invalid': errors.username }"
-          />
+          <InputText id="username" v-model="form.username" class="w-full mt-1"
+            :class="{ 'p-invalid': errors.username }" />
           <small v-if="errors.username" class="p-error">{{ errors.username }}</small>
         </div>
 
         <div class="mb-4">
           <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-          <InputText
-            id="email"
-            v-model="form.email"
-            class="w-full mt-1"
-            :class="{ 'p-invalid': errors.email }"
-          />
+          <InputText id="email" v-model="form.email" class="w-full mt-1" :class="{ 'p-invalid': errors.email }" />
           <small v-if="errors.email" class="p-error">{{ errors.email }}</small>
         </div>
 
         <div class="mb-4">
           <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-          <Password
-            id="password"
-            v-model="form.password"
-            class="w-full mt-1"
-            :class="{ 'p-invalid': errors.password }"
-            toggleMask
-          />
+          <Password id="password" v-model="form.password" class="w-full mt-1" :class="{ 'p-invalid': errors.password }"
+            toggleMask />
           <small v-if="errors.password" class="p-error">{{ errors.password }}</small>
         </div>
 
         <div class="mb-6">
           <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-          <Password
-            id="confirmPassword"
-            v-model="form.confirmPassword"
-            class="w-full mt-1"
-            :class="{ 'p-invalid': errors.confirmPassword }"
-            toggleMask
-          />
+          <Password id="confirmPassword" v-model="form.confirmPassword" class="w-full mt-1"
+            :class="{ 'p-invalid': errors.confirmPassword }" toggleMask />
           <small v-if="errors.confirmPassword" class="p-error">{{ errors.confirmPassword }}</small>
         </div>
 
-        <Button
-          type="submit"
-          label="Sign Up"
-          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-        />
+        <Button type="submit" label="Sign Up"
+          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" />
 
         <div class="mt-4 text-center">
           <p class="text-sm text-gray-600">Or</p>
         </div>
 
-        <Button
-          label="Sign Up with Google"
+        <Button label="Sign Up with Google"
           class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mt-4"
-          @click="handleGoogleSignUp"
-        />
+          @click="handleGoogleSignUp" />
 
         <div class="mt-4 text-center">
           <p class="text-sm text-gray-600">
@@ -181,6 +165,4 @@ export default {
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

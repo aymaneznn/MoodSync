@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL for my backend API
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8080';
 
 // Axios instance with default configuration
 const apiClient = axios.create({
@@ -14,7 +14,7 @@ const apiClient = axios.create({
 // Function to handle user signup
 export const signup = async (userData) => {
     try {
-        const response = await apiClient.post('/auth/signup', userData);
+        const response = await apiClient.post('/users', userData);
         return response.data; // Return the response data (e.g., user details, token)
     } catch (error) {
         console.error('Error during signup:', error.response?.data || error.message);
@@ -47,7 +47,7 @@ export const googleAuth = async (code) => {
 // Function to fetch user profile (protected route)
 export const getUserProfile = async (token) => {
     try {
-        const response = await apiClient.get('/user/profile', {
+        const response = await apiClient.get('/api/user/profile', {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -62,7 +62,7 @@ export const getUserProfile = async (token) => {
 // Function to fetch user profile (protected route)
 export const getAllPost = async () => {
     try {
-        const response = await apiClient.get('/posts', {
+        const response = await apiClient.get('/api/posts', {
         });
         return response.data; // Return the user profile data
     } catch (error) {

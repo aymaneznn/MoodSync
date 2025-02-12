@@ -5,6 +5,16 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
+            path: '/signup',
+            name: 'signup',
+            component: () => import('@/components/SignupPage.vue')
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: () => import('@/components/LoginPage.vue')
+        },
+        {
             path: '/',
             component: AppLayout,
             children: [
@@ -115,12 +125,6 @@ const router = createRouter({
             path: '/pages/notfound',
             name: 'notfound',
             component: () => import('@/views/pages/NotFound.vue')
-        },
-
-        {
-            path: '/auth/login',
-            name: 'login',
-            component: () => import('@/views/pages/auth/Login.vue')
         },
         {
             path: '/auth/access',

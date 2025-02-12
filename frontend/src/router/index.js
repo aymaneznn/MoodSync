@@ -5,23 +5,30 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            path: '/signup',
+            path: '/auth/signup',
             name: 'signup',
             component: () => import('@/components/SignupPage.vue')
         },
         {
-            path: '/login',
+            path: '/auth/login',
             name: 'login',
             component: () => import('@/components/LoginPage.vue')
         },
+        
         {
             path: '/',
             component: AppLayout,
             children: [
                 {
                     path: '/',
-                    name: 'dashboard',
-                    component: () => import('@/views/HomePage.vue')
+                    name: 'homefeed',
+                    component: () => import('@/views/HomeFeed.vue')
+                },
+                {
+                    path: '/profile/:userId', // Dynamic route with userId parameter
+                    name: 'ProfilePage',
+                    component: () => import('@/views/ProfilePage.vue'),
+                    props: true, // Pass route params as props to the component
                 },
                 {
                     path: '/uikit/formlayout',

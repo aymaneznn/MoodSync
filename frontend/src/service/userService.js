@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL for my backend API
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 // Axios instance with default configuration
 const apiClient = axios.create({
@@ -59,6 +59,18 @@ export const getUserProfile = async (token) => {
     }
 };
 
+// Function to fetch user profile (protected route)
+export const getAllPost = async () => {
+    try {
+        const response = await apiClient.get('/posts', {
+        });
+        return response.data; // Return the user profile data
+    } catch (error) {
+        console.error('Error fetching posts:', error.response?.data || error.message);
+        throw error; // Re-throw the error to handle it in the component
+    }
+};
+
 // Function to fetch user posts (protected route)
 export const getUserPosts = async (userId, token) => {
     try {
@@ -73,6 +85,8 @@ export const getUserPosts = async (userId, token) => {
         throw error; // Re-throw the error to handle it in the component
     }
 };
+
+
 
 // Function to like a post
 export const likePost = async (postId) => {

@@ -1,33 +1,17 @@
 <script>
 import { ref, onMounted } from 'vue';
-import { getUserPosts, likePost, unlikePost } from '@/service/userService';
+import { getAllPost, likePost, unlikePost } from '@/service/userService';
 
 export default {
   setup() {
-    const posts = ref([
-      {
-        id: 1,
-        content: "new shirt, new start, let the advanture begins !",
-        mediaUrl: "https://primefaces.org/cdn/primevue/images/product/blue-t-shirt.jpg",
-        visibility: "public",
-        tags: { mood: "happy", weather: "sunny" },
-        likesCount: 0,
-        isLiked: false, // Track if the current user has liked the post
-        createdAt: "2024-02-01T14:30:00Z",
-        updatedAt: "2024-02-01T14:30:00Z",
-        user: {
-          id: 3,
-          name: "John Doe",
-          profile_picture_url: "https://primefaces.org/cdn/primevue/images/organization/walter.jpg",
-        },
-      },
-    ]);
+    const posts = ref([]);
 
     // Fetch posts
     const fetchPosts = async () => {
       try {
-        const response = await getUserPosts();
-        posts.value = response.data;
+        const response = await getAllPost();
+        console.log('Posts fetched:', response);
+        posts.value = response;
       } catch (error) {
         console.error('Error fetching posts:', error);
       }
@@ -52,7 +36,8 @@ export default {
     };
 
     onMounted(() => {
-      // fetchPosts(); // Uncomment this to fetch posts from the backend
+      fetchPosts(); // Uncomment this to fetch posts from the backend
+      console.log('Posts fetched:', posts.value);
     });
 
     return {

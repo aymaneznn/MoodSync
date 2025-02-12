@@ -72,12 +72,9 @@ export const getAllPost = async () => {
 };
 
 // Function to fetch user posts (protected route)
-export const getUserPosts = async (userId, token) => {
+export const getUserPosts = async (userId) => {
     try {
-        const response = await apiClient.get(`/users/${userId}/posts`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const response = await apiClient.get(`/api/posts/user/${userId}`, {
         });
         return response.data; // Return the user posts data
     } catch (error) {

@@ -1,6 +1,6 @@
 <script>
 import { ref, onMounted } from 'vue';
-import { getAllPost, likePost, unlikePost } from '@/service/userService';
+import { getUserPosts, getAllPost, likePost, unlikePost } from '@/service/userService';
 
 export default {
   setup() {
@@ -10,7 +10,13 @@ export default {
     const fetchPosts = async () => {
       try {
         const response = await getAllPost();
-        console.log('Posts fetched:', response);
+        posts.value = response;
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+      try {
+        const response = await getUserPosts(5);
+        console.log('Posts by user:', response);
         posts.value = response;
       } catch (error) {
         console.error('Error fetching posts:', error);

@@ -13,3 +13,11 @@ dist
 api-generator/typedoc.json
 **/.DS_Store
 backend/src/main/java/fr/moodsync/backend/python/local_model/model.safetensors
+backend/src/main/java/fr/moodsync/backend/python/__pycache__/movie_suggestions.cpython-313.pyc
+backend/src/main/java/fr/moodsync/backend/python/__pycache__/sensitive_words_handler.cpython-313.pyc
+backend/src/main/java/fr/moodsync/backend/python/__pycache__/suggestions.cpython-313.pyc
+backend/src/main/java/fr/moodsync/backend/python/local_model/config.json
+backend/src/main/java/fr/moodsync/backend/python/local_tokenizer/special_tokens_map.json
+backend/src/main/java/fr/moodsync/backend/python/local_tokenizer/tokenizer_config.json
+backend/src/main/java/fr/moodsync/backend/python/local_tokenizer/tokenizer.json
+backend/src/main/java/fr/moodsync/backend/python/local_tokenizer/vocab.txt

@@ -31,6 +31,11 @@ const router = createRouter({
                     props: true, // Pass route params as props to the component
                 },
                 {
+                    path: '/analyse',
+                    name: 'analyse',
+                    component: () => import('@/views/EmotionAnalyzer.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

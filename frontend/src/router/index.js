@@ -24,6 +24,11 @@ const router = createRouter({
                     component: () => import('@/views/HomePage.vue')
                 },
                 {
+                    path: '/analyse',
+                    name: 'analyse',
+                    component: () => import('@/views/EmotionAnalyzer.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

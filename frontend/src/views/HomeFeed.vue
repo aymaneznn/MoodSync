@@ -1,9 +1,12 @@
 <script>
 import { ref, onMounted } from 'vue';
-import { getUserPosts, getAllPost, likePost, unlikePost } from '@/service/userService2';
+import { getAllPost, likePost, unlikePost, createPost } from '@/service/apiService';
+
 export default {
   setup() {
     const posts = ref([]);
+    const newPostContent = ref(''); // Contenu du nouveau post
+    const userId = localStorage.getItem('userId'); // Récupération de l'ID utilisateur
 
     // Fetch posts
     const fetchPosts = async () => {
@@ -19,39 +22,60 @@ export default {
     const toggleLike = async (post) => {
       try {
         if (post.isLiked) {
-          // Unlike the post
           await unlikePost(post.id);
           post.likesCount -= 1;
         } else {
-          // Like the post
           await likePost(post.id);
           post.likesCount += 1;
         }
-        post.isLiked = !post.isLiked; // Toggle the like state
+        post.isLiked = !post.isLiked;
       } catch (error) {
         console.error('Error toggling like:', error);
       }
     };
 
+    // Handle post creation
+    const handleCreatePost = async () => {
+      if (!newPostContent.value.trim()) return;
+
+      const newPost = {
+        content: newPostContent.value,
+        mediaUrl: null, 
+        visibility: "public",
+        tags: null,
+        user: { id: userId },
+      };
+
+      try {
+        const createdPost = await createPost(userId, newPost);
+        posts.value.unshift(createdPost); // Ajouter le post en haut de la liste
+        newPostContent.value = ''; // Réinitialiser le champ texte
+      } catch (error) {
+        console.error('Error creating post:', error);
+      }
+    };
+
     onMounted(() => {
-      fetchPosts(); // Uncomment this to fetch posts from the backend
-      console.log('Posts fetched:', posts.value);
+      fetchPosts();
     });
 
     return {
       posts,
       toggleLike,
+      newPostContent,
+      handleCreatePost,
     };
   },
 };
 </script>
+
 
 <template>
   <div class="home-feed">
     <!-- Section pour créer un post -->
     <div class="new-post-section">
       <textarea v-model="newPostContent" rows="3" placeholder="What's on your mind?" class="new-post-textarea p-inputtext p-d-block p-mb-2" autoResize />
-      <Button label="Post" icon="pi pi-check" @click="createPost" class="new-post-button p-button-success p-button-outlined" />
+      <Button label="Post" icon="pi pi-check" @click="handleCreatePost" class="new-post-button p-button-success p-button-outlined" />
     </div>
 
     <!-- Liste des posts -->

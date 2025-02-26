@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class PostService {
         }
 
         post.setUser(user);
-        post.setCreatedAt(Instant.now());
+        post.setCreatedAt(Instant.now().plus(Duration.ofHours(1)));
         post.setUpdatedAt(Instant.now());
         post.setLikesCount(0); // Initialise le nombre de likes à 0
 

@@ -117,6 +117,22 @@ export const likePost = async (postId) => {
     }
   };
 
+  // Function to create a new post
+export const createPost = async (userId, postData) => {
+    try {
+        const token = localStorage.getItem('token'); // Récupération du token
+        const response = await apiClient.post(`/api/posts/user/${userId}`, postData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data; // Retourne la réponse du backend
+    } catch (error) {
+        console.error('Error creating post:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
 // Export all functions
 export default {
     signup,
@@ -125,5 +141,6 @@ export default {
     getUserProfile,
     getUserPosts,
     likePost,
-    unlikePost
+    unlikePost,
+    createPost
 };

@@ -145,7 +145,7 @@ import Column from 'primevue/column';
 import Rating from 'primevue/rating';
 import ProgressSpinner from 'primevue/progressspinner';
 import emotionService from '@/service/emotionService.js';
-import { getUserPosts } from '@/service/userService2';
+import { getUserPosts } from '@/service/apiService';
 
 
 const loading = ref(false);

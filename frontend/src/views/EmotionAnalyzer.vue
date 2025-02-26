@@ -111,7 +111,7 @@
                                 <Column header="Description">
                                     <template #body="{ data }">
                                         <div class="p-text-sm" style="max-width: 400px; color: #4b5563">{{ data.overview
-                                        }}
+                                            }}
                                         </div>
                                     </template>
                                 </Column>
@@ -137,7 +137,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import DataTable from 'primevue/datatable';
@@ -145,23 +145,45 @@ import Column from 'primevue/column';
 import Rating from 'primevue/rating';
 import ProgressSpinner from 'primevue/progressspinner';
 import emotionService from '@/service/emotionService.js';
+import { getUserPosts } from '@/service/userService2';
+
 
 const loading = ref(false);
 const result = ref(null);
+const posts = ref([]);
+const lastPost = ref();
+const sampleText = ref('');
 
-// Predefined text for analysis
-const sampleText = `I fell happy today! I am so excited about the show tonight. I feel like I'm on cloud nine.`;
+const fetchPosts = async () => {
+    try {
+        const response = await getUserPosts(localStorage.getItem('userId'));
+        posts.value = response.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        lastPost.value = posts.value[0];
+        console.log('Posts fetched:', posts.value);
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+    }
+};
+
+onMounted(async () => {
+    await fetchPosts();
+    console.log('Last post:', lastPost.value.content);
+    sampleText.value = lastPost.value?.content || 'vide';
+});
+
 
 const handleAnalysis = async () => {
     try {
         loading.value = true;
-        result.value = await emotionService.analyzeText(sampleText);
+        result.value = await emotionService.analyzeText(sampleText.value);
     } catch (error) {
         console.error(error);
     } finally {
         loading.value = false;
     }
 };
+
+
 </script>
 
 <style scoped>

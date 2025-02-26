@@ -5,12 +5,15 @@ const API_URL = 'http://localhost:8080/api/auth';
 // Fonction pour la connexion
 export const login = async (credentials) => {
     const response = await axios.post(`${API_URL}/login`, credentials);
+    console.log('connexion', response.data.user.id);
+    localStorage.setItem('userId', response.data.user.id);
     return response.data; // Contient le token
 };
 
 // Fonction pour l'inscription
 export const signup = async (userData) => {
     const response = await axios.post(`${API_URL}/register`, userData);
+    
     return response.data; // Contient le token
 };
 

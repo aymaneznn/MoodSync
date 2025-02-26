@@ -10,10 +10,10 @@ export default {
    * @returns {Promise<Object>} - La réponse contenant l'émotion, la suggestion et les films
    */
   analyzeText(text) {
-    return axios.post(API_URL, text, {
+    return axios.post(API_URL, { text: text }, {
       headers: {
         Authorization: `Bearer ${token}`, // Utiliser le format "Bearer <token>"
-        'Content-Type': 'text/plain'
+        'Content-Type': 'application/json'
       }
     })
     .then(response => response.data)

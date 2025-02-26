@@ -1,7 +1,31 @@
 # Define sensitive words
 sensitive_words = [
+    # Anglais - Expressions liées au suicide et à la détresse mentale
     "suicide", "kill myself", "end my life", "want to die", "depressed",
-    "hopeless", "helpless", "no reason to live", "self-harm", "harm myself"
+    "hopeless", "helpless", "no reason to live", "self-harm", "harm myself",
+    "cutting", "cut myself", "overdose", "hang myself", "jump off", "bridge jump",
+    "no way out", "die alone", "can't go on", "give up", "I'm done", "life is pointless",
+    "drowning myself", "gas myself", "bleeding out", "nothing matters anymore",
+    "wish I was dead", "better off dead", "final goodbye", "painless death",
+    "slit my wrists", "won't wake up", "take my own life", "end it all", "last day",
+    "can't take it anymore", "worthless", "useless", "nobody cares", "tired of living",
+    "dark thoughts", "voices in my head", "lost all hope", "empty inside",
+    
+    # Français - Expressions liées au suicide et à la détresse mentale
+    "suicide", "suicider", "mettre fin à mes jours", "fin à ma vie", "je veux mourir",
+    "rien ne vaut la peine", "je n'ai plus d'espoir", "je me sens perdu", "triste",
+    "je vais me tuer", "je ne veux plus vivre", "je suis inutile", "plus d'envie",
+    "tout abandonner", "je ne sers à rien", "plus aucune raison de vivre",
+    "couper mes veines", "sauter d'un pont", "je veux disparaître", "plus jamais",
+    "sur le point de craquer", "je ne peux plus", "je suis à bout", "détruit",
+    "tout est noir", "mourir seul", "overdose", "je suis un fardeau", "peur de vivre",
+    "mon dernier message", "dernière nuit", "je suis fatigué de tout",
+    "j'aimerais ne plus exister", "envie d'en finir", "trop de souffrance",
+    
+    # Autres langues (espagnol, allemand, italien pour une couverture plus large)
+    "quiero morir", "no vale la pena vivir", "odio mi vida", "nadie me quiere",
+    "finalmente libre", "nada importa", "ich will sterben", "mein leben beenden",
+    "voglio morire", "non ha senso vivere", "nessuno mi ama", "odio la mia vita"
 ]
 
 # Function to check for sensitive words

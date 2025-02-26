@@ -1,7 +1,6 @@
 <script>
 import { ref, onMounted } from 'vue';
-import { getUserPosts, getAllPost, likePost, unlikePost } from '@/service/userService';
-
+import { getUserPosts, getAllPost, likePost, unlikePost } from '@/service/userService2';
 export default {
   setup() {
     const posts = ref([]);
@@ -10,13 +9,6 @@ export default {
     const fetchPosts = async () => {
       try {
         const response = await getAllPost();
-        posts.value = response;
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      }
-      try {
-        const response = await getUserPosts(5);
-        console.log('Posts by user:', response);
         posts.value = response;
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -56,20 +48,30 @@ export default {
 
 <template>
   <div class="home-feed">
-    <div v-for="post in posts" :key="post.id" class="post">
-      <!-- Link to the author's profile -->
+    <!-- Section pour créer un post -->
+    <div class="new-post-section">
+      <textarea v-model="newPostContent" rows="3" placeholder="What's on your mind?" class="new-post-textarea p-inputtext p-d-block p-mb-2" autoResize />
+      <Button label="Post" icon="pi pi-check" @click="createPost" class="new-post-button p-button-success p-button-outlined" />
+    </div>
+
+    <!-- Liste des posts -->
+    <div v-for="post in posts" :key="post.id" class="post p-shadow-2">
+      <!-- Profil de l'auteur -->
       <router-link :to="`/profile/${post.user.id}`" class="author">
-        <img :src="post.user.profile_picture_url" alt="Profile Picture" class="profile-picture" />
+        <img :src="post.user.profilePictureUrl" alt="Profile Picture" class="profile-picture" />
         <span class="name">{{ post.user.name }}</span>
       </router-link>
-      <!-- Post content -->
+      
+      <!-- Contenu du post -->
       <div class="content">
         <p>{{ post.content }}</p>
-        <img v-if="post.mediaUrl" :src="post.mediaUrl" alt="Post Image" class="post-image" />
+        <img v-if="post.mediaUrl" :src="post.mediaUrl" alt="Post Image" class="post-image p-shadow-4" />
       </div>
-      <!-- Like button and count -->
+
+      <!-- Section Like -->
       <div class="like-section">
-        <button @click="toggleLike(post)" :class="{ liked: post.isLiked }" class="like-button">
+        <button @click="toggleLike(post)" :class="{ liked: post.isLiked }" class="like-button p-button p-button-text">
+          <i :class="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
           {{ post.isLiked ? 'Unlike' : 'Like' }}
         </button>
         <span class="likes-count">{{ post.likesCount }} likes</span>
@@ -85,12 +87,34 @@ export default {
   padding: 20px;
 }
 
+.new-post-section {
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.new-post-textarea {
+  width: 100%;
+  margin-bottom: 12px;
+  resize: none;
+}
+
+.new-post-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.new-post-button:hover {
+  background-color: #218838;
+}
+
 .post {
   background-color: white;
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .author {
@@ -128,25 +152,23 @@ export default {
 }
 
 .like-button {
-  background-color: #007bff;
-  color: white;
+  background-color: transparent;
+  color: #007bff;
   border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
   cursor: pointer;
   margin-right: 8px;
 }
 
 .like-button:hover {
-  background-color: #0056b3;
+  color: #0056b3;
 }
 
 .like-button.liked {
-  background-color: #dc3545;
+  color: #dc3545;
 }
 
 .like-button.liked:hover {
-  background-color: #c82333;
+  color: #c82333;
 }
 
 .likes-count {

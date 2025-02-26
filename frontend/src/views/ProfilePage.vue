@@ -1,8 +1,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import Button from 'primevue/button';
-import { getUserProfile, getUserPosts } from '@/service/userService';
-
+import { getUserProfile, getUserPosts } from '@/service/userService2';
 export default {
   components: {
     Button,

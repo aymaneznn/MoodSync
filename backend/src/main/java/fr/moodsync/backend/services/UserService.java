@@ -1,7 +1,7 @@
 package fr.moodsync.backend.services;
 
 import fr.moodsync.backend.models.User;
-import fr.moodsync.backend.repositories.UserRepository;
+import fr.moodsync.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

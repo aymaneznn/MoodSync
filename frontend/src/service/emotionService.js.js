@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/emotion/analyze'; // Remplace par l'URL de ton backend
+const API_URL = 'http://localhost:8080/api/emotion/analyze';
+const token = localStorage.getItem("token"); // Récupère le token stocké
 
 export default {
   /**
@@ -11,12 +12,14 @@ export default {
   analyzeText(text) {
     return axios.post(API_URL, text, {
       headers: {
+        Authorization: `Bearer ${token}`, // Utiliser le format "Bearer <token>"
         'Content-Type': 'text/plain'
       }
-    }).then(response => response.data)
-      .catch(error => {
-        console.error('Erreur lors de l\'analyse émotionnelle:', error);
-        throw error;
-      });
+    })
+    .then(response => response.data)
+    .catch(error => {
+      console.error('Erreur lors de l\'analyse émotionnelle:', error);
+      throw error;
+    });
   }
 };

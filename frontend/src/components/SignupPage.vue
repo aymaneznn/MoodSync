@@ -1,113 +1,3 @@
-<script>
-import { ref } from 'vue';
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Button from 'primevue/button';
-import Message from 'primevue/message';
-import { signup } from '@/service/userService';
-
-export default {
-  components: {
-    InputText,
-    Password,
-    Button,
-    Message,
-  },
-  setup() {
-    const form = ref({
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-    });
-
-    const errors = ref({});
-    const successMessage = ref('');
-    const errorMessage = ref('');
-
-    const validateForm = () => {
-      errors.value = {};
-
-      if (!form.value.username) {
-        errors.value.username = 'Username is required.';
-      }
-
-      if (!form.value.email) {
-        errors.value.email = 'Email is required.';
-      } else if (!/\S+@\S+\.\S+/.test(form.value.email)) {
-        errors.value.email = 'Email is invalid.';
-      }
-
-      if (!form.value.password) {
-        errors.value.password = 'Password is required.';
-      } else if (form.value.password.length < 6) {
-        errors.value.password = 'Password must be at least 6 characters.';
-      }
-
-      if (form.value.password !== form.value.confirmPassword) {
-        errors.value.confirmPassword = 'Passwords do not match.';
-      }
-
-      return Object.keys(errors.value).length === 0;
-    };
-
-    const handleSubmit = async () => {
-      if (!validateForm()) {
-        errorMessage.value = 'Please fix the errors in the form.';
-        return;
-      }
-
-      try {
-        const userData = {
-          "email": form.value.email,
-          "passwordHash": form.value.password,
-          "name": form.value.username,
-          "role": "user",
-          "preferences": {
-            "theme": "dark",
-            "notifications": true
-          },
-          "profilePictureUrl": "https://example.com/profile/john_doe.png",
-          "connectionType": "independent",
-          "externalAccountId": null
-        };
-        const response = await signup(userData);
-        console.log('Signup successful:', response);
-        successMessage.value = 'Signup successful! Redirecting...';
-        errorMessage.value = '';
-        // Redirect to login or home page after a delay
-        setTimeout(() => {
-          //window.location.href = '/login'; // Replace with your desired redirect path
-        }, 2000);
-      } catch (error) {
-        console.error('Signup failed:', error);
-        errorMessage.value = error.response?.data?.message || 'Signup failed. Please try again.';
-      }
-    };
-
-    const handleGoogleSignUp = () => {
-      // Redirect to Google OAuth endpoint
-      window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' +
-        'client_id=YOUR_GOOGLE_CLIENT_ID&' +
-        'redirect_uri=YOUR_REDIRECT_URI&' +
-        'response_type=code&' +
-        'scope=email profile&' +
-        'access_type=offline&' +
-        'prompt=consent';
-    };
-
-    return {
-      form,
-      errors,
-      successMessage,
-      errorMessage,
-      handleSubmit,
-      handleGoogleSignUp,
-    };
-  },
-};
-</script>
-
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -164,5 +54,103 @@ export default {
     </div>
   </div>
 </template>
+
+<script>
+import { ref } from 'vue';
+import InputText from 'primevue/inputtext';
+import Password from 'primevue/password';
+import Button from 'primevue/button';
+import Message from 'primevue/message';
+import { signup } from '@/service/userService';
+import { useRouter } from 'vue-router';
+
+export default {
+    components: {
+        InputText,
+        Password,
+        Button,
+        Message
+    },
+    setup() {
+        const router = useRouter();
+        const form = ref({
+            username: '',
+            email: '',
+            password: '',
+            confirmPassword: ''
+        });
+
+        const errors = ref({});
+        const successMessage = ref('');
+        const errorMessage = ref('');
+
+        const validateForm = () => {
+            errors.value = {};
+
+            if (!form.value.username) {
+                errors.value.username = 'Username is required.';
+            }
+
+            if (!form.value.email) {
+                errors.value.email = 'Email is required.';
+            } else if (!/\S+@\S+\.\S+/.test(form.value.email)) {
+                errors.value.email = 'Email is invalid.';
+            }
+
+            if (!form.value.password) {
+                errors.value.password = 'Password is required.';
+            } else if (form.value.password.length < 6) {
+                errors.value.password = 'Password must be at least 6 characters.';
+            }
+
+            if (form.value.password !== form.value.confirmPassword) {
+                errors.value.confirmPassword = 'Passwords do not match.';
+            }
+
+            return Object.keys(errors.value).length === 0;
+        };
+
+        const handleSubmit = async () => {
+            if (!validateForm()) {
+                errorMessage.value = 'Please fix the errors in the form.';
+                return;
+            }
+
+            try {
+                const userData = {
+                    email: form.value.email,
+                    password: form.value.password,
+                    name: form.value.username
+                };
+
+                const response = await signup(userData);
+
+                successMessage.value = 'Signup successful! Redirecting...';
+                errorMessage.value = '';
+
+                // Stocker le token après l'inscription
+                localStorage.setItem('token', response.token);
+
+                // Rediriger vers la page d'accueil
+                setTimeout(() => {
+                    router.push('/');
+                }, 2000);
+            } catch (error) {
+                console.error('Signup failed:', error);
+                errorMessage.value = 'Signup failed. Please try again.';
+            }
+        };
+
+        return {
+            form,
+            errors,
+            successMessage,
+            errorMessage,
+            handleSubmit
+        };
+    }
+};
+</script>
+
 
 <style scoped></style>

@@ -10,6 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -49,7 +50,7 @@ public class Post {
     @ColumnDefault("'[]'")
     @Column(name = "tags")
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> tags;
+    private List<Map<String, Object>> tags;
 
     @ColumnDefault("0")
     @Column(name = "likes_count")
@@ -111,11 +112,11 @@ public class Post {
         this.updatedAt = updatedAt;
     }
 
-    public Map<String, Object> getTags() {
+    public List<Map<String, Object>> getTags() {
         return tags;
     }
 
-    public void setTags(Map<String, Object> tags) {
+    public void setTags(List<Map<String, Object>> tags) {
         this.tags = tags;
     }
 

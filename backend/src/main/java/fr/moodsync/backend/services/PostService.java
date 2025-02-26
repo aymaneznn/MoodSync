@@ -2,8 +2,8 @@ package fr.moodsync.backend.services;
 
 import fr.moodsync.backend.models.Post;
 import fr.moodsync.backend.models.User;
-import fr.moodsync.backend.repositories.PostRepository;
-import fr.moodsync.backend.repositories.UserRepository;
+import fr.moodsync.backend.repository.PostRepository;
+import fr.moodsync.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional

@@ -1,4 +1,4 @@
-package fr.moodsync.backend.repositories;
+package fr.moodsync.backend.repository;
 
 import fr.moodsync.backend.models.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;

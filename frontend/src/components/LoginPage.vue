@@ -1,81 +1,3 @@
-<script>
-import { ref } from 'vue';
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Button from 'primevue/button';
-import Message from 'primevue/message';
-import { login } from '@/service/userService';
-
-export default {
-    components: {
-        InputText,
-        Password,
-        Button,
-        Message
-    },
-    setup() {
-        const form = ref({
-            email: '',
-            password: ''
-        });
-
-        const errors = ref({});
-        const successMessage = ref('');
-        const errorMessage = ref('');
-
-        const validateForm = () => {
-            errors.value = {};
-
-            if (!form.value.email) {
-                errors.value.email = 'Email is required.';
-            } else if (!/\S+@\S+\.\S+/.test(form.value.email)) {
-                errors.value.email = 'Email is invalid.';
-            }
-
-            if (!form.value.password) {
-                errors.value.password = 'Password is required.';
-            }
-
-            return Object.keys(errors.value).length === 0;
-        };
-
-        const handleSubmit = async() => {
-            if (validateForm()) {
-                try {
-                const credentials = {
-                  email: this.form.email,
-                  password: this.form.password,
-                };
-                const response = await login(credentials);
-                console.log('Login successful:', response);
-                // Save token to localStorage or Vuex store
-                localStorage.setItem('token', response.token);
-                // Redirect to home page or dashboard
-              } catch (error) {
-                console.error('Login failed:', error);
-              }
-            } else {
-                errorMessage.value = 'Please fix the errors in the form.';
-            }
-        };
-
-        const handleGoogleLogin = () => {
-            // Redirect to Google OAuth endpoint
-            window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + 'client_id=YOUR_GOOGLE_CLIENT_ID&' + 'redirect_uri=YOUR_REDIRECT_URI&' + 'response_type=code&' + 'scope=email profile&' + 'access_type=offline&' + 'prompt=consent';
-        };
-
-        return {
-            form,
-            errors,
-            successMessage,
-            errorMessage,
-            handleSubmit,
-            handleGoogleLogin
-        };
-    }
-};
-</script>
-
 <template>
     <div class="min-h-screen flex items-center justify-center bg-gray-100">
         <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -114,6 +36,81 @@ export default {
         </div>
     </div>
 </template>
+
+<script>
+import { ref } from 'vue';
+import InputText from 'primevue/inputtext';
+import Password from 'primevue/password';
+import Button from 'primevue/button';
+import Message from 'primevue/message';
+import { login } from '@/service/userService';
+import { useRouter } from 'vue-router';
+
+export default {
+    components: {
+        InputText,
+        Password,
+        Button,
+        Message
+    },
+    setup() {
+        const router = useRouter();
+        const form = ref({
+            email: '',
+            password: ''
+        });
+
+        const errors = ref({});
+        const errorMessage = ref('');
+
+        const validateForm = () => {
+            errors.value = {};
+
+            if (!form.value.email) {
+                errors.value.email = 'Email is required.';
+            } else if (!/\S+@\S+\.\S+/.test(form.value.email)) {
+                errors.value.email = 'Email is invalid.';
+            }
+
+            if (!form.value.password) {
+                errors.value.password = 'Password is required.';
+            }
+
+            return Object.keys(errors.value).length === 0;
+        };
+
+        const handleSubmit = async () => {
+            if (validateForm()) {
+                try {
+                    const response = await login({
+                        email: form.value.email,
+                        password: form.value.password
+                    });
+
+                    // Stocker le token dans localStorage
+                    localStorage.setItem('token', response.token);
+
+                    // Rediriger vers le feed après connexion
+                    router.push('/');
+                } catch (error) {
+                    console.error('Login failed:', error);
+                    errorMessage.value = 'Invalid credentials. Please try again.';
+                }
+            } else {
+                errorMessage.value = 'Please fix the errors in the form.';
+            }
+        };
+
+        return {
+            form,
+            errors,
+            errorMessage,
+            handleSubmit
+        };
+    }
+};
+</script>
+
 
 <style scoped>
 

@@ -17,7 +17,8 @@
                     <div class="button-container">
                         <!-- Start Analysis Button (Visible Initially) -->
                         <Button v-if="!result" label="Start Analysis" icon="pi pi-heart"
-                            class="p-button-rounded p-button-lg p-button-primary" @click="handleAnalysis"
+                        style="margin-left: 40%;"    
+                        class="p-button-rounded p-button-lg p-button-primary" @click="handleAnalysis"
                             :disabled="loading" />
 
                         <!-- Refresh Icon (Visible After Analysis) -->
@@ -29,8 +30,13 @@
                 <!-- Loading Spinner -->
                 <div v-if="loading" class="loading-section p-my-7">
                     <div class="loading-wrapper">
-                        <ProgressSpinner style="width: 60px; height: 60px" strokeWidth="5" animationDuration=".6s" />
-                        <p class="loading-text p-mt-3 p-text-xl">Analyzing...</p>
+                        <div class="emotion-loader">
+                            <div class="emotion emotion-happy">😊</div>
+                            <div class="emotion emotion-sad">😢</div>
+                            <div class="emotion emotion-angry">😠</div>
+                            <div class="emotion emotion-surprised">😮</div>
+                        </div>
+                        <p class="loading-text p-mt-5 p-text-xl">Analyzing your emotions...</p>
                     </div>
                 </div>
 
@@ -111,7 +117,7 @@
                                 <Column header="Description">
                                     <template #body="{ data }">
                                         <div class="p-text-sm" style="max-width: 400px; color: #4b5563">{{ data.overview
-                                            }}
+                                        }}
                                         </div>
                                     </template>
                                 </Column>
@@ -143,10 +149,8 @@ import Card from 'primevue/card';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Rating from 'primevue/rating';
-import ProgressSpinner from 'primevue/progressspinner';
 import emotionService from '@/service/emotionService.js';
 import { getUserPosts } from '@/service/apiService';
-
 
 const loading = ref(false);
 const result = ref(null);
@@ -328,78 +332,83 @@ const handleAnalysis = async () => {
 
 .loading-wrapper {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem; /* Espacement entre le loader et le texte */
 }
 
 .loading-text {
     color: #4b5563;
     font-weight: 500;
+    font-size: 1.5rem; /* Taille du texte augmentée */
+    margin-top: 2rem; /* Espacement supplémentaire */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Ombre légère pour le texte */
 }
 
-.button-container {
+/* Emotion Loader */
+.emotion-loader {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 20px;
+    font-size: 4rem; /* Taille des emojis augmentée */
+    animation: rotateEmotions 4s infinite;
+    position: relative;
 }
 
-/* Enhanced Alert Section */
-.alert-section {
-    background: #fff5f5;
-    border: 2px solid #fee2e2;
-    border-radius: 12px;
+@keyframes rotateEmotions {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(90deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    75% {
+        transform: rotate(270deg);
+    }
 }
 
-.alert-header {
-    background: linear-gradient(135deg, #fee2e2 0%, #fff5f5 100%);
-    padding: 1.5rem;
-    border-radius: 12px 12px 0 0;
+.emotion {
+    opacity: 0;
+    animation: fadeInOut 4s infinite;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.alert-header h3 {
-    color: #dc2626;
-    font-size: 1.4rem;
+.emotion-happy {
+    animation-delay: 0s;
 }
 
-.alert-content {
-    color: #b91c1c;
-    padding: 1.5rem;
-    line-height: 1.7;
-    font-size: 1.1rem;
+.emotion-sad {
+    animation-delay: 1s;
 }
 
-.alert-content ul {
-    list-style-type: disc;
-    padding-left: 2rem;
-    margin-top: 1rem;
+.emotion-angry {
+    animation-delay: 2s;
 }
 
-.alert-content li {
-    margin-bottom: 0.75rem;
+.emotion-surprised {
+    animation-delay: 3s;
 }
 
-.alert-content a {
-    color: #3b82f6;
-    text-decoration: underline;
-}
-
-.alert-content a:hover {
-    color: #2563eb;
-}
-
-/* Refresh Button */
-.refresh-button {
-    position: fixed;
-    bottom: 79%;
-    right: 3%;
-    z-index: 1000;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
-}
-
-.refresh-button:hover {
-    background-color: #2563eb;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.3);
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    75% {
+        opacity: 0;
+    }
 }
 </style>

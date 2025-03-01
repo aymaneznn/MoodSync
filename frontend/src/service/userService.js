@@ -19,11 +19,11 @@ export const signup = async (userData) => {
 
 // Fonction pour vérifier si l'utilisateur est connecté
 export const isAuthenticated = () => {
-    return !!localStorage.getItem('token'); // Vérifie si le token est stocké
+    return !!localStorage.getItem('userId'); // Vérifie si le userId est stocké
 };
 
 // Fonction pour déconnecter l'utilisateur
 export const logout = () => {
-    console.log('Déconnexion' + localStorage.getItem('token'));
-    localStorage.removeItem('token');
+    console.log('Déconnexion' + localStorage.getItem('userId'));
+    localStorage.removeItem('userId');
 };

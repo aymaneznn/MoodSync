@@ -20,7 +20,7 @@ const model = ref([
     {
         label: 'Settings',
         items: [
-            { label: 'Account', icon: 'pi pi-fw pi-user-edit', to: '/settings/account' },
+            { label: 'Account', icon: 'pi pi-fw pi-user-edit', to: '/edit-profile' },
             { label: 'Privacy', icon: 'pi pi-fw pi-lock', to: '/settings/privacy' },
         ]
     },

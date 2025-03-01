@@ -45,9 +45,9 @@ export const googleAuth = async (code) => {
 };
 
 // Function to fetch user profile (protected route)
-export const getUserProfile = async (token) => {
+export const getUserProfile = async (userId, token) => {
     try {
-        const response = await apiClient.get('/api/user/profile', {
+        const response = await apiClient.get(`/users/${userId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

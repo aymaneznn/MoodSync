@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -55,5 +56,32 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable Integer id) {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // 🔹 Liker un post
+    @PostMapping("/like-post/{postId}")
+    public ResponseEntity<Void> likePost(@PathVariable Integer postId) {
+        postService.likePost(postId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 🔹 Unliker un post
+    @PostMapping("/unlike-post/{postId}")
+    public ResponseEntity<Void> unlikePost(@PathVariable Integer postId) {
+        postService.unlikePost(postId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Add tags to a post
+    @PostMapping("/add-tags/{postId}")
+    public ResponseEntity<Void> addComment(@PathVariable Integer postId, @RequestBody List<Map<String, Object>> tags) {
+        postService.addComment(postId, tags);
+        return ResponseEntity.noContent().build();
+    }
+
+    // get tags of a post
+    @GetMapping("/comments/{postId}")
+    public List<Map<String, Object>> getTags(@PathVariable Integer postId) {
+        return postService.getTags(postId);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -90,7 +91,7 @@ public class PostService {
         existingPost.setContent(postDetails.getContent());
         existingPost.setMediaUrl(postDetails.getMediaUrl());
         existingPost.setVisibility(postDetails.getVisibility());
-        existingPost.setTags(postDetails.getTags());
+        existingPost.setComments(postDetails.getComments());
         existingPost.setUpdatedAt(Instant.now());
 
         return postRepository.save(existingPost);
@@ -102,5 +103,40 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trouvé avec l'ID : " + id);
         }
         postRepository.deleteById(id);
+    }
+
+    // 🔹 Liker un post
+    public void likePost(Integer postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trouvé avec l'ID : " + postId));
+
+        post.setLikesCount(post.getLikesCount() + 1);
+        postRepository.save(post);
+    }
+
+    // 🔹 Unliker un post
+    public void unlikePost(Integer postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trouvé avec l'ID : " + postId));
+
+        post.setLikesCount(post.getLikesCount() - 1);
+        postRepository.save(post);
+    }
+
+    // Add Tags
+    public void addComment(Integer postId, List<Map<String, Object>> tags) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trouvé avec l'ID : " + postId));
+
+        post.setComments(tags);
+        postRepository.save(post);
+    }
+
+    // get tags
+    public List<Map<String, Object>> getTags(Integer postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trouvé avec l'ID : " + postId));
+
+        return post.getComments();
     }
 }

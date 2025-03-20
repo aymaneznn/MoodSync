@@ -83,13 +83,11 @@ export const getUserPosts = async (userId) => {
     }
 };
 
-
-
 // Function to like a post
 export const likePost = async (postId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiClient.post(`/posts/${postId}/like`, null, {
+      const response = await apiClient.post(`/api/posts/like-post/${postId}`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -105,7 +103,7 @@ export const likePost = async (postId) => {
   export const unlikePost = async (postId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiClient.delete(`/posts/${postId}/like`, {
+      const response = await apiClient.post(`/api/posts/unlike-post/${postId}`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -133,6 +131,87 @@ export const createPost = async (userId, postData) => {
     }
 };
 
+// Function to fetch recommendations for a user
+export const getUserRecommendations = async (userId) => {
+    try {
+        const token = localStorage.getItem('token'); // Récupérer le token d'authentification
+        const response = await apiClient.get(`/api/recommendations/user/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data; // Retourne les recommandations de l'utilisateur
+    } catch (error) {
+        console.error('Error fetching recommendations:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
+// Function to add a new recommendation
+export const addRecommendation = async (recommendationData) => {
+    try {
+        const token = localStorage.getItem('token'); // Récupérer le token d'authentification
+        const response = await apiClient.post('/api/recommendations/add', recommendationData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+        return response.data; // Retourne la recommandation ajoutée
+    } catch (error) {
+        console.error('Error adding recommendation:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
+// Function to delete a recommendation
+export const deleteRecommendation = async (recommendationId) => {
+    try {
+        const token = localStorage.getItem('token'); // Récupérer le token d'authentification
+        const response = await apiClient.delete(`/api/recommendations/delete/${recommendationId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data; // Retourne la réponse de suppression
+    } catch (error) {
+        console.error('Error deleting recommendation:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
+export const addCommentToPost = async (postId, commentData) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await apiClient.post(`/api/posts/add-tags/${postId}`, commentData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error adding comment to post:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
+export const getCommentsByPostId = async (postId) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await apiClient.get(`/api/posts/comments/${postId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching comments:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
+
+
 // Export all functions
 export default {
     signup,
@@ -142,5 +221,10 @@ export default {
     getUserPosts,
     likePost,
     unlikePost,
-    createPost
+    createPost,
+    getUserRecommendations,
+    addRecommendation,
+    deleteRecommendation,
+    addCommentToPost,
+    getCommentsByPostId
 };

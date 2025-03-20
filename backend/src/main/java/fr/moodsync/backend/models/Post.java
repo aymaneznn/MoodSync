@@ -48,9 +48,9 @@ public class Post {
     private Instant updatedAt;
 
     @ColumnDefault("'[]'")
-    @Column(name = "tags")
+    @Column(name = "comments")
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<Map<String, Object>> tags;
+    private List<Map<String, Object>> comments;
 
     @ColumnDefault("0")
     @Column(name = "likes_count")
@@ -112,12 +112,12 @@ public class Post {
         this.updatedAt = updatedAt;
     }
 
-    public List<Map<String, Object>> getTags() {
-        return tags;
+    public List<Map<String, Object>> getComments() {
+        return comments;
     }
 
-    public void setTags(List<Map<String, Object>> tags) {
-        this.tags = tags;
+    public void setComments(List<Map<String, Object>> comments) {
+        this.comments = comments;
     }
 
     public Integer getLikesCount() {

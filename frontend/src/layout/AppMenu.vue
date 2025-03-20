@@ -28,7 +28,7 @@ const model = ref([
         label: 'Support',
         items: [
             { label: 'Help Center', icon: 'pi pi-fw pi-question-circle', to: '/support/help-center' },
-            { label: 'Contact Us', icon: 'pi pi-fw pi-envelope', to: '/support/contact' },
+            { label: 'Contact Us', icon: 'pi pi-fw pi-envelope', to: '/contact-us' },
         ]
     },
     {

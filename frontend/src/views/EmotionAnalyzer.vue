@@ -93,6 +93,11 @@
                             </Card>
                         </div>
 
+                        <!-- Save Recommendation Button -->
+                        <div class="save-recommendation p-my-6">
+                            <Button label="Save Recommendation" icon="pi pi-save" class="p-button-rounded p-button-success" @click="saveRecommendation" />
+                        </div>
+
                         <!-- Movies Section -->
                         <div class="movies-section p-my-6">
                             <div class="section-title p-mb-5">
@@ -137,6 +142,15 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Recommendations History -->
+                <div class="recommendations-history p-my-6">
+                    <h3 class="p-text-center">
+                        <i class="pi pi-history p-mr-3"></i>
+                        Recommendations History
+                    </h3>
+                    <Dropdown :options="recommendations" optionLabel="content" placeholder="Select a recommendation" class="p-mt-3" />
+                </div>
             </div>
         </template>
     </Card>
@@ -149,14 +163,16 @@ import Card from 'primevue/card';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Rating from 'primevue/rating';
+import Dropdown from 'primevue/dropdown';
 import emotionService from '@/service/emotionService.js';
-import { getUserPosts } from '@/service/apiService';
+import { getUserProfile, getUserPosts, addRecommendation, getUserRecommendations } from '@/service/apiService';
 
 const loading = ref(false);
 const result = ref(null);
 const posts = ref([]);
 const lastPost = ref();
 const sampleText = ref('');
+const recommendations = ref([]);
 
 const fetchPosts = async () => {
     try {
@@ -169,12 +185,22 @@ const fetchPosts = async () => {
     }
 };
 
+const fetchRecommendations = async () => {
+    try {
+        const response = await getUserRecommendations(localStorage.getItem('userId'));
+        recommendations.value = response;
+        console.log('Recommendations fetched:', recommendations.value);
+    } catch (error) {
+        console.error('Error fetching recommendations:', error);
+    }
+};
+
 onMounted(async () => {
     await fetchPosts();
+    await fetchRecommendations();
     console.log('Last post:', lastPost.value.content);
     sampleText.value = lastPost.value?.content || 'vide';
 });
-
 
 const handleAnalysis = async () => {
     try {
@@ -187,7 +213,22 @@ const handleAnalysis = async () => {
     }
 };
 
-
+const saveRecommendation = async () => {
+    try {
+        const recommendationData = {
+            user: await getUserProfile(localStorage.getItem('userId'), localStorage.getItem('token')),
+            type: 'emotion',
+            content: result.value.suggestion,
+            generatedBy: 'algorithm',
+            createdAt: new Date(),
+        };
+        await addRecommendation(recommendationData);
+        await fetchRecommendations();
+        console.log('Recommendation saved:', recommendationData);
+    } catch (error) {
+        console.error('Error saving recommendation:', error);
+    }
+};
 </script>
 
 <style scoped>

@@ -19,7 +19,9 @@ const routes = [
             { path: '/', name: 'homefeed', component: () => import('@/views/HomeFeed.vue') },
             { path: '/profile/:userId', name: 'ProfilePage', component: () => import('@/views/ProfilePage.vue'), props: true },
             { path: '/analyse', name: 'analyse', component: () => import('@/views/EmotionAnalyzer.vue') },
-            { path: '/edit-profile', name: 'editProfile', component: () => import('@/views/EditProfile.vue') }
+            { path: '/edit-profile', name: 'editProfile', component: () => import('@/views/EditProfile.vue') },
+            { path: '/contact-us', name: 'contactUs', component: () => import('@/views/ContactUs.vue') },
+            { path: '/my-posts', name: 'myPosts', component: () => import('@/views/MyPost.vue') }
         ]
     }
 ];

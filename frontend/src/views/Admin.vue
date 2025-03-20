@@ -2,19 +2,26 @@
     <div class="admin-page">
         <div class="card">
             <TabView>
-                <!-- Onglet Utilisateurs -->
-                <TabPanel header="Utilisateurs">
+                <!-- Users Tab -->
+                <TabPanel header="Users">
                     <div class="card">
                         <Toolbar class="mb-4">
                             <template #start>
-                                <Button label="Nouvel Utilisateur" icon="pi pi-plus" severity="success" class="mr-2" @click="openNewUserDialog" />
+                                <Button label="New User" icon="pi pi-plus" severity="success" class="mr-2" @click="openNewUserDialog" />
                             </template>
                         </Toolbar>
 
                         <DataTable :value="users" v-model:filters="filters" :paginator="true" :rows="10" dataKey="id" filterDisplay="menu" :loading="loading" :rowsPerPageOptions="[5, 10, 20]" responsiveLayout="scroll">
-                            <Column field="username" header="Nom d'utilisateur" sortable style="min-width: 12rem" />
+                            <Column field="name" header="Username" sortable style="min-width: 12rem" />
                             <Column field="email" header="Email" sortable style="min-width: 16rem" />
-                            <Column field="createdAt" header="Date de création" sortable style="min-width: 10rem">
+                            <Column field="role" header="Role" sortable style="min-width: 8rem">
+                                <template #body="slotProps">
+                                    <Tag :severity="slotProps.data.role === 'admin' ? 'danger' : 'info'">
+                                        {{ slotProps.data.role }}
+                                    </Tag>
+                                </template>
+                            </Column>
+                            <Column field="createdAt" header="Creation Date" sortable style="min-width: 10rem">
                                 <template #body="slotProps">
                                     {{ new Date(slotProps.data.createdAt).toLocaleDateString() }}
                                 </template>
@@ -29,12 +36,12 @@
                     </div>
                 </TabPanel>
 
-                <!-- Onglet Posts -->
+                <!-- Posts Tab -->
                 <TabPanel header="Posts">
                     <div class="card">
                         <DataTable :value="posts" v-model:filters="postFilters" :paginator="true" :rows="10" dataKey="id" filterDisplay="menu" :loading="loadingPosts" :rowsPerPageOptions="[5, 10, 20]" responsiveLayout="scroll">
                             <Column field="id" header="ID" sortable style="min-width: 5rem" />
-                            <Column field="content" header="Contenu" sortable style="min-width: 20rem">
+                            <Column field="content" header="Content" sortable style="min-width: 20rem">
                                 <template #body="slotProps">
                                     <div class="post-content">
                                         <p>{{ slotProps.data.content }}</p>
@@ -42,7 +49,7 @@
                                     </div>
                                 </template>
                             </Column>
-                            <Column field="user.name" header="Auteur" sortable style="min-width: 12rem">
+                            <Column field="user.name" header="Author" sortable style="min-width: 12rem">
                                 <template #body="slotProps">
                                     <div class="user-info">
                                         <img :src="slotProps.data.user.profilePictureUrl" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px" />
@@ -50,14 +57,14 @@
                                     </div>
                                 </template>
                             </Column>
-                            <Column field="visibility" header="Visibilité" sortable style="min-width: 8rem" />
+                            <Column field="visibility" header="Visibility" sortable style="min-width: 8rem" />
                             <Column field="likesCount" header="Likes" sortable style="min-width: 8rem" />
-                            <Column field="comments" header="Commentaires" style="min-width: 12rem">
+                            <Column field="comments" header="Comments" style="min-width: 12rem">
                                 <template #body="slotProps">
                                     {{ slotProps.data.comments.length }}
                                 </template>
                             </Column>
-                            <Column field="createdAt" header="Date de création" sortable style="min-width: 10rem">
+                            <Column field="createdAt" header="Creation Date" sortable style="min-width: 10rem">
                                 <template #body="slotProps">
                                     {{ new Date(slotProps.data.createdAt).toLocaleDateString() }}
                                 </template>
@@ -72,8 +79,8 @@
                         </DataTable>
                     </div>
 
-                    <!-- Dialog pour voir les détails du post -->
-                    <Dialog v-model:visible="postViewDialog" :header="'Détails du Post'" modal class="p-fluid post-dialog">
+                    <!-- Post Details Dialog -->
+                    <Dialog v-model:visible="postViewDialog" :header="'Post Details'" modal class="p-fluid post-dialog">
                         <div v-if="selectedPost" class="post-details">
                             <div class="post-header">
                                 <div class="user-info">
@@ -91,7 +98,7 @@
                                 <span class="visibility">🔒 {{ selectedPost.visibility }}</span>
                             </div>
                             <div class="comments-section">
-                                <h3>Commentaires ({{ selectedPost.comments.length }})</h3>
+                                <h3>Comments ({{ selectedPost.comments.length }})</h3>
                                 <ul class="comments-list">
                                     <li v-for="(comment, index) in selectedPost.comments" :key="index">
                                         {{ comment.user }}
@@ -101,31 +108,31 @@
                         </div>
                     </Dialog>
 
-                    <!-- Dialog de confirmation de suppression -->
+                    <!-- Delete Confirmation Dialog -->
                     <Dialog v-model:visible="deletePostDialog" modal header="Confirmation" :style="{ width: '450px' }">
                         <div class="confirmation-content">
                             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                            <span>Êtes-vous sûr de vouloir supprimer ce post ?</span>
+                            <span>Are you sure you want to delete this post?</span>
                         </div>
                         <template #footer>
-                            <Button label="Non" icon="pi pi-times" outlined @click="deletePostDialog = false" />
-                            <Button label="Oui" icon="pi pi-check" severity="danger" @click="deletePost" />
+                            <Button label="No" icon="pi pi-times" outlined @click="deletePostDialog = false" />
+                            <Button label="Yes" icon="pi pi-check" severity="danger" @click="deletePost" />
                         </template>
                     </Dialog>
 
-                    <!-- Dialog d'édition de post -->
-                    <Dialog v-model:visible="editPostDialog" :header="'Modifier le Post'" modal class="p-fluid post-dialog">
+                    <!-- Edit Post Dialog -->
+                    <Dialog v-model:visible="editPostDialog" :header="'Edit Post'" modal class="p-fluid post-dialog">
                         <div v-if="selectedPost" class="post-edit-form">
                             <div class="field">
-                                <label for="content">Contenu</label>
+                                <label for="content">Content</label>
                                 <Textarea id="content" v-model="selectedPost.content" rows="4" required autoResize />
                             </div>
                             <div class="field">
-                                <label for="visibility">Visibilité</label>
-                                <Dropdown id="visibility" v-model="selectedPost.visibility" :options="['public', 'private', 'friends']" placeholder="Sélectionnez la visibilité" />
+                                <label for="visibility">Visibility</label>
+                                <Dropdown id="visibility" v-model="selectedPost.visibility" :options="['public', 'private', 'friends']" placeholder="Select visibility" />
                             </div>
                             <div class="field">
-                                <label for="mediaUrl">URL de l'image</label>
+                                <label for="mediaUrl">Image URL</label>
                                 <div class="p-inputgroup">
                                     <InputText id="mediaUrl" v-model="selectedPost.mediaUrl" />
                                     <Button icon="pi pi-eye" @click="previewImage = selectedPost.mediaUrl" />
@@ -134,38 +141,54 @@
                             </div>
                         </div>
                         <template #footer>
-                            <Button label="Annuler" icon="pi pi-times" outlined @click="editPostDialog = false" />
-                            <Button label="Sauvegarder" icon="pi pi-check" @click="savePost" />
+                            <Button label="Cancel" icon="pi pi-times" outlined @click="editPostDialog = false" />
+                            <Button label="Save" icon="pi pi-check" @click="savePost" />
                         </template>
                     </Dialog>
                 </TabPanel>
             </TabView>
         </div>
 
-        <!-- Dialogs -->
-        <Dialog v-model:visible="userDialog" :header="userDialogTitle" modal class="p-fluid">
+        <!-- Add/Edit User Dialog -->
+        <Dialog v-model:visible="userDialog" :header="userDialogTitle" modal class="p-fluid user-dialog">
             <div class="field">
-                <label for="username">Nom d'utilisateur</label>
-                <InputText id="username" v-model="editedUser.username" required autofocus />
+                <label for="name">Username</label>
+                <InputText id="name" v-model="editedUser.name" required autofocus />
             </div>
             <div class="field">
                 <label for="email">Email</label>
                 <InputText id="email" v-model="editedUser.email" required type="email" />
             </div>
+            <div class="field">
+                <label for="role">Role</label>
+                <Dropdown
+                    id="role"
+                    v-model="editedUser.role"
+                    :options="['user', 'admin']"
+                    optionLabel=""
+                    placeholder="Select role"
+                    class="w-full"
+                />
+            </div>
+            <div class="field">
+                <label for="profilePictureUrl">Profile Picture URL</label>
+                <InputText id="profilePictureUrl" v-model="editedUser.profilePictureUrl" />
+            </div>
             <template #footer>
-                <Button label="Annuler" icon="pi pi-times" outlined @click="hideDialog" />
-                <Button label="Sauvegarder" icon="pi pi-check" @click="saveUser" />
+                <Button label="Cancel" icon="pi pi-times" outlined @click="hideDialog" />
+                <Button label="Save" icon="pi pi-check" @click="saveUser" />
             </template>
         </Dialog>
 
+        <!-- Delete User Confirmation Dialog -->
         <Dialog v-model:visible="deleteUserDialog" modal header="Confirmation" :style="{ width: '450px' }">
             <div class="confirmation-content">
                 <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                <span>Êtes-vous sûr de vouloir supprimer cet utilisateur ?</span>
+                <span>Are you sure you want to delete this user?</span>
             </div>
             <template #footer>
-                <Button label="Non" icon="pi pi-times" outlined @click="deleteUserDialog = false" />
-                <Button label="Oui" icon="pi pi-check" severity="danger" @click="deleteUser" />
+                <Button label="No" icon="pi pi-times" outlined @click="deleteUserDialog = false" />
+                <Button label="Yes" icon="pi pi-check" severity="danger" @click="deleteUser" />
             </template>
         </Dialog>
     </div>
@@ -174,6 +197,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import { getAllPost } from '@/service/apiService';
+import Tag from 'primevue/tag';
+import Dropdown from 'primevue/dropdown';
 
 const toast = useToast();
 const loading = ref(false);
@@ -192,8 +218,6 @@ const selectedPost = ref(null);
 const editPostDialog = ref(false);
 const previewImage = ref('');
 
-import { getAllPost, likePost, unlikePost, createPost, addCommentToPost, getCommentsByPostId, getUserProfile } from '@/service/apiService';
-
 // Chargement des données
 onMounted(async () => {
     await loadUsers();
@@ -203,11 +227,18 @@ onMounted(async () => {
 const loadUsers = async () => {
     loading.value = true;
     try {
-        const response = await getUserProfile(userId);
-        console.log(response);
-        userProfilePicture.value = response.profilePictureUrl;
+        const response = await fetch('http://localhost:8080/users');
+        const data = await response.json();
+        users.value = data;
+        console.log("users->>>", users.value);
     } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('Erreur lors de la récupération des utilisateurs', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Unable to load users',
+            life: 3000
+        });
     } finally {
         loading.value = false;
     }
@@ -230,14 +261,16 @@ const loadPosts = async () => {
 };
 
 const openNewUserDialog = () => {
-    editedUser.value = {};
-    userDialogTitle.value = 'Nouvel Utilisateur';
+    editedUser.value = {
+        role: 'user' // Default role for new users
+    };
+    userDialogTitle.value = 'New User';
     userDialog.value = true;
 };
 
 const editUser = (user) => {
     editedUser.value = { ...user };
-    userDialogTitle.value = 'Modifier Utilisateur';
+    userDialogTitle.value = 'Edit User';
     userDialog.value = true;
 };
 
@@ -248,23 +281,23 @@ const hideDialog = () => {
 const saveUser = async () => {
     try {
         if (editedUser.value.id) {
-            await fetch(`http://localhost:8080/api/users/${editedUser.value.id}`, {
+            await fetch(`http://localhost:8080/users/${editedUser.value.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(editedUser.value)
+                body: JSON.stringify(editedUser.value),
             });
         } else {
-            await fetch('http://localhost:8080/api/users', {
+            await fetch('http://localhost:8080/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(editedUser.value)
+                body: JSON.stringify(editedUser.value),
             });
         }
         await loadUsers();
         userDialog.value = false;
-        toast.add({ severity: 'success', summary: 'Succès', detail: 'Utilisateur sauvegardé', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: 'User saved successfully', life: 3000 });
     } catch (error) {
-        toast.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la sauvegarde', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Unable to save user', life: 3000 });
     }
 };
 
@@ -275,14 +308,14 @@ const confirmDeleteUser = (user) => {
 
 const deleteUser = async () => {
     try {
-        await fetch(`http://localhost:8080/api/users/${editedUser.value.id}`, {
-            method: 'DELETE'
+        await fetch(`http://localhost:8080/users/${editedUser.value.id}`, {
+            method: 'DELETE',
         });
         await loadUsers();
         deleteUserDialog.value = false;
-        toast.add({ severity: 'success', summary: 'Succès', detail: 'Utilisateur supprimé', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: 'User deleted successfully', life: 3000 });
     } catch (error) {
-        toast.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la suppression', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete user', life: 3000 });
     }
 };
 
@@ -315,16 +348,16 @@ const savePost = async () => {
         editPostDialog.value = false;
         toast.add({
             severity: 'success',
-            summary: 'Succès',
-            detail: 'Post mis à jour avec succès',
+            summary: 'Success',
+            detail: 'Post updated successfully',
             life: 3000
         });
     } catch (error) {
         console.error('Erreur lors de la mise à jour:', error);
         toast.add({
             severity: 'error',
-            summary: 'Erreur',
-            detail: 'Impossible de mettre à jour le post',
+            summary: 'Error',
+            detail: 'Unable to update post',
             life: 3000
         });
     }
@@ -342,9 +375,9 @@ const deletePost = async () => {
         });
         await loadPosts();
         deletePostDialog.value = false;
-        toast.add({ severity: 'success', summary: 'Succès', detail: 'Post supprimé', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Post deleted successfully', life: 3000 });
     } catch (error) {
-        toast.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de la suppression', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete post', life: 3000 });
     }
 };
 </script>
@@ -376,9 +409,14 @@ const deletePost = async () => {
 
 .post-dialog {
     max-width: 90vw;
-    width: 600px;
+    width: 800px;
+    min-height: 500px;
 
     .post-details {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 1rem;
+
         .post-header {
             display: flex;
             justify-content: space-between;
@@ -410,10 +448,13 @@ const deletePost = async () => {
             margin-bottom: 1rem;
 
             .post-image {
-                max-width: 100%;
+                max-width: 400px;
+                max-height: 300px;
+                width: auto;
                 height: auto;
                 border-radius: 8px;
                 margin-top: 0.5rem;
+                object-fit: contain;
             }
         }
 
@@ -471,11 +512,14 @@ const deletePost = async () => {
     }
 
     .media-preview {
-        max-width: 100%;
+        max-width: 400px;
+        max-height: 300px;
+        width: auto;
         height: auto;
         margin-top: 1rem;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        object-fit: contain;
     }
 
     .p-inputgroup {
@@ -484,5 +528,46 @@ const deletePost = async () => {
             border-color: var(--primary-color);
         }
     }
+}
+
+.user-dialog {
+    width: 700px;
+    min-height: 400px;
+
+    .field {
+        margin-bottom: 1.5rem;
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .p-dropdown {
+            width: 100%;
+        }
+    }
+}
+
+/* Ajout des styles généraux pour tous les dialogues */
+:deep(.p-dialog) {
+    .p-dialog-content {
+        min-height: 200px;
+        padding: 2rem;
+    }
+
+    .p-dialog-header {
+        padding: 1.5rem 2rem;
+    }
+
+    .p-dialog-footer {
+        padding: 1.5rem 2rem;
+    }
+}
+
+/* Style spécifique pour le dialogue de confirmation */
+:deep(.p-dialog.confirmation-dialog) {
+    width: 500px;
+    min-height: 200px;
 }
 </style>

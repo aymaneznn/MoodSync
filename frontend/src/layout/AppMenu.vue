@@ -5,11 +5,9 @@ import { useRouter } from 'vue-router';
 import { getUserProfile } from '@/service/apiService';
 import { onMounted } from 'vue';
 
-
 import AppMenuItem from './AppMenuItem.vue';
 
 const router = useRouter();
-
 const user = ref();
 
 const fetchUserProfile = async () => {
@@ -22,21 +20,12 @@ const fetchUserProfile = async () => {
     }
 };
 
-onMounted(() => {
-    fetchUserProfile();
-});
 
 const model = ref([
     {
         label: 'Home',
         items: [
             { label: 'Feed', icon: 'pi pi-fw pi-home', to: '/' },
-            {
-                label: 'Admin',
-                icon: 'pi pi-fw pi-cog',
-                to: '/admin',
-                visible: () => user.value.name === 'admin'
-            },
             { label: 'My Posts', icon: 'pi pi-fw pi-pencil', to: '/my-posts' }
         ]
     },

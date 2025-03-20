@@ -52,7 +52,7 @@ const routes = [
             await fetchUserProfile();
             console.log(user.value);
             console.log('localstorage', localStorage.getItem('userId'));
-            if (user.value.name === 'admin') {
+            if (user.value.role === 'admin') {
                 next();
             } else {
                 next('/');

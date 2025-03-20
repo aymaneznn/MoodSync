@@ -1,8 +1,29 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { getUserProfile } from '@/service/apiService';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+const router = useRouter();
+const outsideClickListener = ref(null);
+const topbarMenuActive = ref(false);
+const user = ref();
+
+const fetchUserProfile = async () => {
+            try {
+                const response = await getUserProfile(localStorage.getItem('userId'));
+                console.log("la", response);
+                user.value = response;
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+            }
+        };
+
+onMounted(() => {
+    fetchUserProfile();
+});
 </script>
 
 <template>
@@ -63,6 +84,15 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-calendar"></i>
                         <span>Calendar</span>
+                    </button>
+                    <button 
+                        v-if="user?.role == 'admin'"
+                        type="button" 
+                        class="layout-topbar-action" 
+                        @click="router.push('/admin')"
+                    >
+                        <i class="pi pi-cog"></i>
+                        <span>Admin</span>
                     </button>
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-inbox"></i>

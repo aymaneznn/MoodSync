@@ -1,6 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { isAuthenticated } from '@/service/userService';
 import AppLayout from '@/layout/AppLayout.vue';
+import { getUserProfile } from '@/service/apiService';
+import { ref, onMounted } from 'vue';
+
+const user = ref();
+
+const fetchUserProfile = async () => {
+    try {
+        const response = await getUserProfile(localStorage.getItem('userId'));
+        console.log("localstorage", localStorage.getItem('userId'));
+        
+        user.value = response;
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+    }
+};
+
+onMounted(async () => {
+    await fetchUserProfile();
+});
 
 const routes = [
     { path: '/auth/signup', name: 'signup', component: () => import('@/components/SignupPage.vue') },
@@ -23,6 +42,22 @@ const routes = [
             { path: '/contact-us', name: 'contactUs', component: () => import('@/views/ContactUs.vue') },
             { path: '/my-posts', name: 'myPosts', component: () => import('@/views/MyPost.vue') }
         ]
+    },
+    {
+        path: '/admin',
+        name: 'admin',
+        component: () => import('@/views/Admin.vue'),
+        meta: { requiresAuth: true },
+        beforeEnter: async (to, from, next) => {
+            await fetchUserProfile();
+            console.log(user.value);
+            console.log('localstorage', localStorage.getItem('userId'));
+            if (user.value.name === 'admin') {
+                next();
+            } else {
+                next('/');
+            }
+        }
     }
 ];
 

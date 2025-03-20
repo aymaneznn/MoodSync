@@ -84,4 +84,10 @@ public class PostController {
     public List<Map<String, Object>> getTags(@PathVariable Integer postId) {
         return postService.getTags(postId);
     }
+
+    //put post
+    @PutMapping("/put-post/{id}")
+    public ResponseEntity<Post> putPost(@PathVariable Integer id, @RequestBody Post post) {
+        return ResponseEntity.ok(postService.putPost(id, post));
+    }
 }

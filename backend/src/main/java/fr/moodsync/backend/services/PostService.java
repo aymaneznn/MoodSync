@@ -139,4 +139,18 @@ public class PostService {
 
         return post.getComments();
     }
+
+    // put post
+    public Post putPost(Integer id, Post post) {
+        Post existingPost = postRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trouvé avec l'ID : " + id));
+
+        existingPost.setContent(post.getContent());
+        existingPost.setMediaUrl(post.getMediaUrl());
+        existingPost.setVisibility(post.getVisibility());
+        existingPost.setComments(post.getComments());
+        existingPost.setUpdatedAt(Instant.now());
+
+        return postRepository.save(existingPost);
+    }
 }

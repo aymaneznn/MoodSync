@@ -5,9 +5,11 @@ import { getAllPost, likePost, unlikePost, createPost, addCommentToPost, getComm
 export default {
     setup() {
         const posts = ref([]);
-        const newPostContent = ref(''); // Contenu du nouveau post
-        const userId = localStorage.getItem('userId'); // Récupération de l'ID utilisateur
-        const newComments = ref({}); // Pour stocker les nouveaux commentaires
+        const newPostContent = ref(''); // New post content
+        const userId = localStorage.getItem('userId'); // Get user ID
+        const newComments = ref({}); // To store new comments
+        const expandedComments = ref({}); // To track which posts have expanded comments
+        const INITIAL_COMMENTS_COUNT = 2; // Initial number of comments to display
 
         const fetchPosts = async () => {
             try {
@@ -52,8 +54,8 @@ export default {
 
             try {
                 const createdPost = await createPost(userId, newPost);
-                posts.value.unshift(createdPost); // Ajouter le post en haut de la liste
-                newPostContent.value = ''; // Réinitialiser le champ texte
+                posts.value.unshift(createdPost); // Add post at the top of the list
+                newPostContent.value = ''; // Reset text field
             } catch (error) {
                 console.error('Error creating post:', error);
             }
@@ -78,7 +80,7 @@ export default {
             }
             try {
                 const response = await addCommentToPost(postId, comments);
-                // Mettre à jour le post avec le nouveau commentaire
+                // Update post with new comment
                 const postIndex = posts.value.findIndex((p) => p.id === postId);
                 if (postIndex !== -1) {
                     if (!posts.value[postIndex].comments) {
@@ -86,19 +88,31 @@ export default {
                     }
                     if (comments.length > 0) {
                         posts.value[postIndex].comments.push({ user: newComments.value[postId] });
-                        console.log('responsehdeio');
                     } else {
                         posts.value[postIndex].comments = comments;
-                        console.log('null');
                     }
-                    console.log('response', newComments.value[postId]);
                 }
-                // Réinitialiser le champ de commentaire
+                // Reset comment field
                 newComments.value[postId] = '';
-                console.log(posts.value[postIndex].comments);
             } catch (error) {
                 console.error('Error adding comment:', error);
             }
+        };
+
+        const toggleComments = (postId) => {
+            expandedComments.value[postId] = !expandedComments.value[postId];
+        };
+
+        const getVisibleComments = (post) => {
+            if (!post.comments) return [];
+            if (expandedComments.value[post.id]) {
+                return post.comments;
+            }
+            return post.comments.slice(0, INITIAL_COMMENTS_COUNT);
+        };
+
+        const hasMoreComments = (post) => {
+            return post.comments && post.comments.length > INITIAL_COMMENTS_COUNT;
         };
 
         onMounted(() => {
@@ -111,7 +125,11 @@ export default {
             newPostContent,
             handleCreatePost,
             newComments,
-            handleAddComment
+            handleAddComment,
+            expandedComments,
+            toggleComments,
+            getVisibleComments,
+            hasMoreComments
         };
     }
 };
@@ -119,27 +137,27 @@ export default {
 
 <template>
     <div class="home-feed">
-        <!-- Section pour créer un post -->
+        <!-- Create post section -->
         <div class="new-post-section">
             <textarea v-model="newPostContent" rows="3" placeholder="What's on your mind?" class="new-post-textarea p-inputtext p-d-block p-mb-2" autoResize />
             <Button label="Post" icon="pi pi-check" @click="handleCreatePost" class="new-post-button p-button-success p-button-outlined" />
         </div>
 
-        <!-- Liste des posts -->
+        <!-- Posts list -->
         <div v-for="post in posts" :key="post.id" class="post p-shadow-2">
-            <!-- Profil de l'auteur -->
+            <!-- Author profile -->
             <router-link :to="`/profile/${post.user.id}`" class="author">
                 <img :src="post.user.profilePictureUrl" alt="Profile Picture" class="profile-picture" />
                 <span class="name">{{ post.user.name }}</span>
             </router-link>
 
-            <!-- Contenu du post -->
+            <!-- Post content -->
             <div class="content">
                 <p>{{ post.content }}</p>
                 <img v-if="post.mediaUrl" :src="post.mediaUrl" alt="Post Image" class="post-image p-shadow-4" />
             </div>
 
-            <!-- Section Like -->
+            <!-- Like section -->
             <div class="like-section">
                 <button @click="toggleLike(post)" :class="{ liked: post.isLiked }" class="like-button p-button p-button-text">
                     <i :class="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
@@ -148,14 +166,34 @@ export default {
                 <span class="likes-count">{{ post.likesCount }} likes</span>
             </div>
 
-            <!-- Section Commentaires -->
+            <!-- Comments section -->
             <div class="comments-section">
-                <div class="comments-list" v-if="post.comments && post.comments.length > 0">
-                    <div v-for="comment in post.comments" class="comment"><strong>User </strong>: {{ comment.user }}</div>
+                <div class="comments-list" v-if="getVisibleComments(post).length > 0">
+                    <div v-for="comment in getVisibleComments(post)" :key="comment.id" class="comment">
+                        <div class="comment-content">
+                            <span class="comment-text">{{ comment.user }}</span>
+                        </div>
+                    </div>
+                    <div v-if="hasMoreComments(post)" class="comments-toggle" @click="toggleComments(post.id)">
+                        {{ expandedComments[post.id] ? 'See less' : `View all ${post.comments.length - 2} comments` }}
+                    </div>
                 </div>
                 <div class="add-comment">
-                    <textarea v-model="newComments[post.id]" placeholder="Ajouter un commentaire..." class="p-inputtext p-d-block" rows="2"></textarea>
-                    <Button label="Commenter" icon="pi pi-comment" @click="handleAddComment(post.id)" class="p-button-outlined p-button-secondary" />
+                    <div class="comment-input-wrapper">
+                        <textarea 
+                            v-model="newComments[post.id]" 
+                            placeholder="Add a comment..." 
+                            class="comment-input"
+                            rows="1"
+                            @input="autoResize"
+                        ></textarea>
+                        <Button 
+                            label="Post" 
+                            @click="handleAddComment(post.id)" 
+                            class="p-button-text comment-button"
+                            :disabled="!newComments[post.id]?.trim()"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -273,8 +311,8 @@ export default {
 
 .comments-section {
     margin-top: 16px;
-    border-top: 1px solid #eee;
-    padding-top: 16px;
+    border-top: 1px solid #dbdbdb;
+    padding-top: 12px;
 }
 
 .comments-list {
@@ -282,25 +320,75 @@ export default {
 }
 
 .comment {
-    padding: 8px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
+    display: flex;
+    align-items: flex-start;
     margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.comment-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.comment-username {
+    font-weight: 600;
+    color: #262626;
+}
+
+.comment-text {
+    color: #262626;
+}
+
+.comments-toggle {
+    color: #8e8e8e;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.comments-toggle:hover {
+    color: #262626;
 }
 
 .add-comment {
+    border-top: 1px solid #dbdbdb;
+    padding-top: 12px;
+}
+
+.comment-input-wrapper {
     display: flex;
-    gap: 8px;
     align-items: flex-start;
+    gap: 8px;
 }
 
-.add-comment textarea {
+.comment-input {
     flex-grow: 1;
+    border: none;
+    outline: none;
     resize: none;
-    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 18px;
+    padding: 0;
+    min-height: 18px;
+    max-height: 80px;
 }
 
-.add-comment button {
-    margin-top: 4px;
+.comment-button {
+    color: #0095f6;
+    font-weight: 600;
+    padding: 0;
+    height: auto;
+}
+
+.comment-button:disabled {
+    color: #b2dffc;
+    cursor: not-allowed;
+}
+
+.comment-button:not(:disabled):hover {
+    color: #00376b;
 }
 </style>

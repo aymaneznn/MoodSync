@@ -195,26 +195,40 @@ export default {
         </div>
 
         <!-- Posts list -->
-        <div v-for="post in posts" :key="post.id" class="post p-shadow-2">
-            <!-- Author profile -->
-            <router-link :to="`/profile/${post.user.id}`" class="author">
-                <img :src="post.user.profilePictureUrl" alt="Profile Picture" class="profile-picture" />
-                <span class="name">{{ post.user.name }}</span>
-            </router-link>
-
-            <!-- Post content -->
-            <div class="content">
-                <p>{{ post.content }}</p>
-                <img v-if="post.mediaUrl" :src="post.mediaUrl" alt="Post Image" class="post-image p-shadow-4" />
+        <div v-for="post in posts" :key="post.id" class="post">
+            <!-- Post header -->
+            <div class="post-header">
+                <router-link :to="`/profile/${post.user.id}`" class="author">
+                    <img :src="post.user.profilePictureUrl" alt="Profile Picture" class="profile-picture" />
+                    <span class="name">{{ post.user.name }}</span>
+                </router-link>
             </div>
 
-            <!-- Like section -->
-            <div class="like-section">
-                <button @click="toggleLike(post)" :class="{ liked: post.isLiked }" class="like-button p-button p-button-text">
-                    <i :class="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-                    {{ post.isLiked ? 'Unlike' : 'Like' }}
-                </button>
-                <span class="likes-count">{{ post.likesCount }} likes</span>
+            <!-- Post image -->
+            <div v-if="post.mediaUrl" class="post-image-container">
+                <img :src="post.mediaUrl" alt="Post Image" class="post-image" />
+            </div>
+
+            <!-- Post content -->
+            <div class="post-content">
+                <div class="post-actions">
+                    <div class="action-buttons">
+                        <button @click="toggleLike(post)" :class="{ liked: post.isLiked }" class="action-button">
+                            <i :class="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
+                        </button>
+                        <button class="action-button">
+                            <i class="pi pi-comment"></i>
+                        </button>
+                        <button class="action-button">
+                            <i class="pi pi-share-alt"></i>
+                        </button>
+                    </div>
+                    <button class="action-button bookmark">
+                        <i class="pi pi-bookmark"></i>
+                    </button>
+                </div>
+                <div class="likes-count">{{ post.likesCount }} likes</div>
+                <div class="post-text">{{ post.content }}</div>
             </div>
 
             <!-- Comments section -->
@@ -222,7 +236,8 @@ export default {
                 <div class="comments-list" v-if="getVisibleComments(post).length > 0">
                     <div v-for="comment in getVisibleComments(post)" :key="comment.id" class="comment">
                         <div class="comment-content">
-                            <span class="comment-text">{{ comment.user }}</span>
+                            <span class="comment-username">{{ comment.user }}</span>
+                            <span class="comment-text">{{ comment.content }}</span>
                         </div>
                     </div>
                     <div v-if="hasMoreComments(post)" class="comments-toggle" @click="toggleComments(post.id)">
@@ -253,9 +268,10 @@ export default {
 
 <style scoped>
 .home-feed {
-    max-width: 800px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
+    background-color: #fafafa;
 }
 
 .new-post-section {
@@ -268,8 +284,9 @@ export default {
 }
 
 .post-header {
+    padding: 14px;
     display: flex;
-    gap: 12px;
+    align-items: center;
 }
 
 .post-input-container {
@@ -358,17 +375,20 @@ export default {
 }
 
 .profile-picture {
-    width: 48px;
-    height: 48px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    object-fit: cover;
+    margin-right: 12px;
 }
 
 .post {
     background-color: white;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 16px;
+    border-radius: 3px;
+    margin-bottom: 24px;
+    border: 1px solid #dbdbdb;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .author {
@@ -379,63 +399,78 @@ export default {
 }
 
 .name {
-    font-weight: bold;
+    font-weight: 600;
+    color: #262626;
 }
 
-.content {
-    margin-top: 12px;
+.post-image-container {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
 }
 
 .post-image {
     width: 100%;
-    border-radius: 8px;
-    margin-top: 12px;
+    height: 100%;
+    object-fit: cover;
 }
 
-.like-section {
+.post-content {
+    padding: 12px;
+}
+
+.post-actions {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-top: 12px;
+    margin-bottom: 8px;
 }
 
-.like-button {
-    background-color: transparent;
-    color: #007bff;
+.action-buttons {
+    display: flex;
+    gap: 16px;
+}
+
+.action-button {
+    background: none;
     border: none;
+    padding: 8px;
     cursor: pointer;
-    margin-right: 8px;
+    color: #262626;
+    font-size: 24px;
+    transition: color 0.2s;
 }
 
-.like-button:hover {
-    color: #0056b3;
+.action-button:hover {
+    color: #8e8e8e;
 }
 
-.like-button.liked {
-    color: #dc3545;
+.action-button.liked {
+    color: #ed4956;
 }
 
-.like-button.liked:hover {
-    color: #c82333;
+.action-button.bookmark {
+    margin-left: auto;
 }
 
 .likes-count {
-    font-size: 14px;
-    color: #666;
+    font-weight: 600;
+    color: #262626;
+    margin-bottom: 8px;
+}
+
+.post-text {
+    color: #262626;
+    margin-bottom: 8px;
+    line-height: 1.4;
 }
 
 .comments-section {
-    margin-top: 16px;
-    border-top: 1px solid #dbdbdb;
-    padding-top: 12px;
-}
-
-.comments-list {
-    margin-bottom: 12px;
+    padding: 0 12px 12px;
+    border-top: 1px solid #efefef;
 }
 
 .comment {
-    display: flex;
-    align-items: flex-start;
     margin-bottom: 8px;
     font-size: 14px;
 }
@@ -468,7 +503,8 @@ export default {
 }
 
 .add-comment {
-    border-top: 1px solid #dbdbdb;
+    margin-top: 12px;
+    border-top: 1px solid #efefef;
     padding-top: 12px;
 }
 

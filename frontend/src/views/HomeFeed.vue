@@ -1,6 +1,6 @@
 <script>
 import { ref, onMounted } from 'vue';
-import { getAllPost, likePost, unlikePost, createPost, addCommentToPost, getCommentsByPostId } from '@/service/apiService';
+import { getAllPost, likePost, unlikePost, createPost, addCommentToPost, getCommentsByPostId, getUserProfile } from '@/service/apiService';
 
 export default {
     setup() {
@@ -10,7 +10,23 @@ export default {
         const newComments = ref({}); // To store new comments
         const expandedComments = ref({}); // To track which posts have expanded comments
         const INITIAL_COMMENTS_COUNT = 2; // Initial number of comments to display
+        const userProfilePicture = ref(localStorage.getItem('profilePictureUrl')); // Get user profile picture
 
+        const fetchUserProfile = async () => {
+            try {
+                const response = await getUserProfile(userId);
+                console.log(response);
+                userProfilePicture.value = response.profilePictureUrl;
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+            }
+        };
+
+        onMounted(() => {
+            fetchUserProfile();
+            fetchPosts();
+        });
+        
         const fetchPosts = async () => {
             try {
                 const response = await getAllPost();
@@ -129,7 +145,8 @@ export default {
             expandedComments,
             toggleComments,
             getVisibleComments,
-            hasMoreComments
+            hasMoreComments,
+            userProfilePicture
         };
     }
 };
@@ -139,8 +156,42 @@ export default {
     <div class="home-feed">
         <!-- Create post section -->
         <div class="new-post-section">
-            <textarea v-model="newPostContent" rows="3" placeholder="What's on your mind?" class="new-post-textarea p-inputtext p-d-block p-mb-2" autoResize />
-            <Button label="Post" icon="pi pi-check" @click="handleCreatePost" class="new-post-button p-button-success p-button-outlined" />
+            <div class="post-header">
+                <img :src="userProfilePicture" alt="Profile Picture" class="profile-picture" />
+                <div class="post-input-container">
+                    <textarea 
+                        v-model="newPostContent" 
+                        placeholder="What's happening?" 
+                        class="new-post-textarea" 
+                        @input="autoResize"
+                        maxlength="280"
+                    ></textarea>
+                    <div class="post-actions">
+                        <div class="post-attachments">
+                            <button class="attachment-button">
+                                <i class="pi pi-image"></i>
+                            </button>
+                            <button class="attachment-button">
+                                <i class="pi pi-video"></i>
+                            </button>
+                            <button class="attachment-button">
+                                <i class="pi pi-smile"></i>
+                            </button>
+                        </div>
+                        <div class="post-submit">
+                            <span class="character-count" :class="{ 'near-limit': newPostContent.length > 250 }">
+                                {{ 280 - newPostContent.length }}
+                            </span>
+                            <Button 
+                                label="Post" 
+                                @click="handleCreatePost" 
+                                class="tweet-button"
+                                :disabled="!newPostContent.trim()"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Posts list -->
@@ -210,24 +261,107 @@ export default {
 .new-post-section {
     background-color: #fff;
     padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    border: 1px solid #e1e8ed;
+}
+
+.post-header {
+    display: flex;
+    gap: 12px;
+}
+
+.post-input-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .new-post-textarea {
     width: 100%;
-    margin-bottom: 12px;
+    border: none;
+    outline: none;
     resize: none;
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100px;
+    padding: 8px 0;
+    color: #14171a;
 }
 
-.new-post-button {
-    background-color: #28a745;
+.new-post-textarea::placeholder {
+    color: #657786;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e1e8ed;
+}
+
+.post-attachments {
+    display: flex;
+    gap: 16px;
+}
+
+.attachment-button {
+    background: none;
+    border: none;
+    padding: 8px;
+    color: #1da1f2;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.attachment-button:hover {
+    background-color: rgba(29, 161, 242, 0.1);
+}
+
+.post-submit {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.character-count {
+    font-size: 14px;
+    color: #657786;
+}
+
+.character-count.near-limit {
+    color: #f5a623;
+}
+
+.tweet-button {
+    background-color: #1da1f2;
     color: white;
+    border: none;
+    border-radius: 9999px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.2s;
 }
 
-.new-post-button:hover {
-    background-color: #218838;
+.tweet-button:hover:not(:disabled) {
+    background-color: #1a91da;
+}
+
+.tweet-button:disabled {
+    background-color: #98d7f7;
+    cursor: not-allowed;
+}
+
+.profile-picture {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .post {
@@ -242,13 +376,6 @@ export default {
     align-items: center;
     text-decoration: none;
     color: inherit;
-}
-
-.profile-picture {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 12px;
 }
 
 .name {
@@ -294,19 +421,6 @@ export default {
 .likes-count {
     font-size: 14px;
     color: #666;
-}
-.content {
-    margin-top: 12px;
-}
-
-.post-image {
-    max-width: 100%; /* L'image ne dépasse pas la largeur du conteneur */
-    height: auto; /* La hauteur s'ajuste automatiquement */
-    display: block; /* Centrer l'image */
-    margin: 0 auto; /* Centrer l'image */
-    border-radius: 8px;
-    object-fit: cover; /* Remplir l'espace sans déformation */
-    max-height: 500px; /* Hauteur maximale pour éviter les images trop grandes */
 }
 
 .comments-section {

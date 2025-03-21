@@ -168,44 +168,20 @@ const formatLyrics = (content) => {
 const handleGeneration = async () => {
     try {
         loading.value = true;
-        // const response = await fetch('http://localhost:8080/api/llm/generate-lyrics', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({ text: sampleText.value })
-        // });
-
-        // if (!response.ok) {
-        //     throw new Error('Erreur lors de la génération des paroles');
-        // }
-
-        // const data = await response.json();
-        const data = {
-            id: 'chatcmpl-exn5vzbp7954iajfj22hp',
-            object: 'chat.completion',
-            created: 1742523597,
-            model: 'mathstral-7b-v0.1',
-            choices: [
-                {
-                    index: 0,
-                    logprobs: null,
-                    finish_reason: 'stop',
-                    message: {
-                        role: 'assistant',
-                        content:
-                            "\"Sunshine on your face,\nLife's like a sweet embrace.\nBask in the golden rays of joy,\nDance to the rhythm of happiness that blooms.\n\nIn the garden of life, you sway,\nLiving each moment as it may.\nThe world is full of color and song,\nSo sing out loud, let your voice belong.\n\nWith every beat of your heart,\nYou're painting the world with art.\nCelebrate the sunshine today,\nFor life's a beautiful way!\" 🌞"
-                    }
-                }
-            ],
-            usage: {
-                prompt_tokens: 113,
-                completion_tokens: 120,
-                total_tokens: 233
+        const response = await fetch('http://localhost:8080/api/llm/generate-lyrics', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            stats: {},
-            system_fingerprint: 'mathstral-7b-v0.1'
-        };
+            body: JSON.stringify({ text: sampleText.value })
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la génération des paroles');
+        }
+
+        const data = await response.json();
+        
         result.value = data.choices[0].message.content;
         formatLyrics(result.value);
     } catch (error) {

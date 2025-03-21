@@ -11,7 +11,7 @@
 
                 <div class="mb-6">
                     <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <Password id="password" v-model="form.password" class="w-full mt-1" :class="{ 'p-invalid': errors.password }" toggleMask />
+                    <Password id="password" v-model="form.password" class="w-full mt-1" :class="{ 'p-invalid': errors.password }" :feedback="false" toggleMask />
                     <small v-if="errors.password" class="p-error">{{ errors.password }}</small>
                 </div>
 

@@ -40,7 +40,8 @@ const routes = [
             { path: '/analyse', name: 'analyse', component: () => import('@/views/EmotionAnalyzer.vue') },
             { path: '/edit-profile', name: 'editProfile', component: () => import('@/views/EditProfile.vue') },
             { path: '/contact-us', name: 'contactUs', component: () => import('@/views/ContactUs.vue') },
-            { path: '/my-posts', name: 'myPosts', component: () => import('@/views/MyPost.vue') }
+            { path: '/my-posts', name: 'myPosts', component: () => import('@/views/MyPost.vue') },
+            { path: '/lyrics-generator', name: 'lyricsGenerator', component: () => import('@/views/LyricsGenerator.vue') }
         ]
     },
     {

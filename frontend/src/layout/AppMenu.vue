@@ -47,6 +47,7 @@ const model = ref([
         label: 'Other',
         items: [
             { label: 'Recomendations', icon: 'pi pi-fw pi-chart-line', to: '/analyse' },
+            { label: 'Lyrics Generator', icon: 'pi pi-fw pi-volume-up', to: '/lyrics-generator' },
             {
                 label: 'Logout',
                 icon: 'pi pi-fw pi-power-off',
